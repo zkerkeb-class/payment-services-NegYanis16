@@ -52,8 +52,8 @@ app.post('/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: 'https://front-staging-uncl.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://front-staging-uncl.onrender.com/cancel',
+      success_url: 'https://front-neg-yanis16-bxt5-okgp8joy1-negyanis16s-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://front-neg-yanis16-bxt5-okgp8joy1-negyanis16s-projects.vercel.app/cancel',
     });
     res.json({ url: session.url });
   } catch (err) {
