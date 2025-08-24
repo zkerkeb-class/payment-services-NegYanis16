@@ -7,7 +7,11 @@ const app = express();
 // Remplace par ta vraie clé secrète Stripe (sk_test_... ou sk_live_...)
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_votre_cle_secrete');
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: 'https://front-staging-uncl.onrender.com',
+  }
+));
 app.use(express.json());
 
 // Endpoint pour tester la connexion
@@ -95,82 +99,22 @@ app.get('/session/:sessionId', async (req, res) => {
   }
 });
 
-// Endpoint pour déclencher l'envoi d'email de confirmation d'achat
-app.post('/send-purchase-email', async (req, res) => {
-  const { sessionId, userData } = req.body;
+// Endpoint pour les métriques
+app.get('/metrics', (req, res) => {
+  const metrics = {
+    service: 'payment-service',
+    timestamp: new Date().toISOString(),
+    status: 'healthy',
+    version: '1.0.0',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+  };
   
-  if (!sessionId || !userData) {
-    return res.status(400).json({ 
-      error: 'Session ID et données utilisateur sont requis' 
-    });
-  }
-  
-  try {
-    // Récupérer les détails de la session Stripe
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
-    
-    if (session.payment_status !== 'paid') {
-      return res.status(400).json({ 
-        error: 'Le paiement n\'est pas encore confirmé' 
-      });
-    }
-    
-    // Extraire les informations de la session
-    const amount = (session.amount_total / 100).toFixed(2);
-    const quantity = session.line_items?.data[0]?.description?.match(/(\d+)/)?.[1] || 'N/A';
-    
-    // Préparer les données pour l'email
-    const emailData = {
-      email: userData.email,
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      quantity: parseInt(quantity),
-      amount: amount,
-      transactionId: sessionId
-    };
-    
-    // Appeler le service de notification par email
-    const mailServiceUrl = process.env.MAIL_SERVICE_URL || 'http://localhost:3004';
-    const apiKey = process.env.MAIL_SERVICE_API_KEY || 'your-api-key';
-    
-    const response = await fetch(`${mailServiceUrl}/api/mail/send-purchase-confirmation`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': apiKey
-      },
-      body: JSON.stringify(emailData)
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(`Erreur du service de mail: ${errorData.error || response.statusText}`);
-    }
-    
-    const responseData = await response.json();
-    console.log('Email de confirmation envoyé avec succès:', responseData);
-    
-    res.json({ 
-      message: 'Email de confirmation envoyé avec succès',
-      emailSent: true 
-    });
-    
-  } catch (error) {
-    console.error('Erreur lors de l\'envoi de l\'email:', error);
-    
-    res.status(500).json({ 
-      error: 'Erreur interne lors de l\'envoi de l\'email',
-      details: error.message 
-    });
-  }
+  res.set('Content-Type', 'application/json');
+  res.json(metrics);
 });
 
 const PORT = process.env.PORT || 3003;
 app.listen(PORT, () => {
   console.log(`🚀 Serveur Stripe Checkout démarré sur le port ${PORT}`);
-  // console.log(`📋 Endpoints disponibles:`);
-  // console.log(`   GET  /health - Test de connexion`);
-  // console.log(`   POST /create-checkout-session - Créer une session de paiement`);
-  // console.log(`   GET  /session/:sessionId - Récupérer les détails d'une session`);
-  // console.log(`⚠️  N'oubliez pas de configurer votre clé Stripe dans STRIPE_SECRET_KEY`);
 }); 
