@@ -9,7 +9,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_votre_cle_secret
 
 app.use(cors(
   {
-    origin: 'https://front-neg-yanis16-bxt5-okgp8joy1-negyanis16s-projects.vercel.app',
+    origin: 'https://front-neg-yanis16-bxt5.vercel.app',
   }
 ));
 app.use(express.json());
@@ -52,8 +52,8 @@ app.post('/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: 'https://front-neg-yanis16-bxt5-okgp8joy1-negyanis16s-projects.vercel.app/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://front-neg-yanis16-bxt5-okgp8joy1-negyanis16s-projects.vercel.app/cancel',
+      success_url: 'https://front-neg-yanis16-bxt5.vercel.app/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://front-neg-yanis16-bxt5.vercel.app/cancel',
     });
     res.json({ url: session.url });
   } catch (err) {
