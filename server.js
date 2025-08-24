@@ -7,7 +7,11 @@ const app = express();
 // Remplace par ta vraie clé secrète Stripe (sk_test_... ou sk_live_...)
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_votre_cle_secrete');
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: 'https://front-staging-uncl.onrender.com',
+  }
+));
 app.use(express.json());
 
 // Endpoint pour tester la connexion
