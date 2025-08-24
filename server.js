@@ -9,7 +9,7 @@ const stripe = Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_votre_cle_secret
 
 app.use(cors(
   {
-    origin: 'https://front-staging-uncl.onrender.com',
+    origin: 'https://front-neg-yanis16-bxt5-okgp8joy1-negyanis16s-projects.vercel.app',
   }
 ));
 app.use(express.json());
