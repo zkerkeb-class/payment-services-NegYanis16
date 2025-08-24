@@ -48,8 +48,8 @@ app.post('/create-checkout-session', async (req, res) => {
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'http://localhost:3000/cancel',
+      success_url: 'https://front-staging-uncl.onrender.com/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'https://front-staging-uncl.onrender.com/cancel',
     });
     res.json({ url: session.url });
   } catch (err) {
